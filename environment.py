@@ -73,7 +73,7 @@ class Game:
         options = []
         if self.game_state['dice_roll_result'] > 0:
             for i, token_position in enumerate(current_player_board_positions):
-                if (token_position < 15 and token_position + self.game_state['dice_roll_result'] <= 15 and token_position + self.game_state['dice_roll_result'] not in current_player_board_positions and (token_position, token_position + self.game_state['dice_roll_result']) not in options) or (token_position + self.game_state['dice_roll_result'] == 8 and 8 not in rival_player_board_positions) or (token_position + self.game_state['dice_roll_result'] == 15):
+                if (token_position < 15 and token_position + self.game_state['dice_roll_result'] <= 15 and token_position + self.game_state['dice_roll_result'] not in current_player_board_positions and (token_position, token_position + self.game_state['dice_roll_result']) not in options and token_position + self.game_state['dice_roll_result'] != 8) or (token_position + self.game_state['dice_roll_result'] == 8 and 8 not in rival_player_board_positions and 8 not in current_player_board_positions) or (token_position + self.game_state['dice_roll_result'] == 15):
                     options.append((token_position, token_position + self.game_state['dice_roll_result']))
         return options
 
@@ -156,7 +156,7 @@ class Game:
         print('-------')
         print(f'|{light_final_positions[14]}|{light_final_positions[11] + dark_final_positions[11]}|{dark_final_positions[14]}|')
         print('-------')
-        print(f'|{light_final_positions[13]}|{light_final_positions[12] + dark_final_positions[11]}|{dark_final_positions[13]}|')
+        print(f'|{light_final_positions[13]}|{light_final_positions[12] + dark_final_positions[12]}|{dark_final_positions[13]}|')
         print('-------')
         current_token_color_turn = self.player1_token_color if self.game_state['turn'] == self.player1.name else self.player2_token_color
         print(f'Turn for player {self.game_state["turn"]}. ({current_token_color_turn}). Make your movement...')

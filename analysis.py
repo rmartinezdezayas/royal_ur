@@ -4,8 +4,11 @@ import os
 
 # logs_path = 'game_simulation_logs/random_vs_random'
 # logs_path = 'game_simulation_logs/random_vs_first_move_agent'
-logs_path = 'game_simulation_logs/random_vs_last_move_agent'
+# logs_path = 'game_simulation_logs/random_vs_last_move_agent'
 # logs_path = 'game_simulation_logs/first_move_agent_vs_last_move_agent'
+# logs_path = 'game_simulation_logs/first_move_agent_vs_greedy_agent'
+logs_path = 'game_simulation_logs/last_move_agent_vs_greedy_agent'
+# logs_path = 'game_simulation_logs/random_vs_greedy_agent'
 
 log_dataframes = []
 
