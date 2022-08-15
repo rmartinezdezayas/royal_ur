@@ -1,0 +1,1 @@
+Remove-Item -Path .\game_simulation_logs\*\*.csv
