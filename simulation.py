@@ -6,7 +6,7 @@ from agents.greedy_agent import GreedyAgent
 from agents.human_agent import Human
 from environment import Game
 
-iterations = 2
+iterations = 1
 
 # human_agent_vs_random_agent
 for iter in range(iterations):
@@ -51,3 +51,7 @@ for iter in range(iterations):
 # last_move_agent_vs_expectimax
 for iter in range(iterations):
     new_game = Game(player1=LastMoveAgent(), player2=ExpectimaxAgent(), log_path='game_simulation_logs/last_move_agent_vs_expectimax')
+
+# human_agent_vs_expectimax_agent
+for iter in range(iterations):
+    new_game = Game(player1=Human('Player1'), player2=ExpectimaxAgent(depth=3), log_path='game_simulation_logs/human_agent_vs_expectimax_agent', game_state=game_state, print_board=True, dice_roll_manual=True)

@@ -72,7 +72,7 @@ class Game:
             while True:
                 try:
                     dice_roll_result = int(input('Enter dice roll value [0 1 2 3 4]: '))
-                    if dice_roll_result in range(1, 5):
+                    if dice_roll_result in range(0, 5):
                         break
                 except:
                     print('Input not valid, try again.')
@@ -145,6 +145,8 @@ class Game:
 
         # log current turn (finished)
         self.log_turn()
+        if self.print_board == True:
+            print(f'Option chosen: {self.game_state["decision"]}')
 
         # set values for next turn
         # update token positions based on decision taken
