@@ -13,12 +13,9 @@ class Game:
         self.log_path = log_path
         self.dice_roll_manual = dice_roll_manual
         if game_state == None:
-            self.player1_token_color = 'light'
-            self.player2_token_color = 'dark'
             self.create_new_game_state()
-        else:
-            self.player1_token_color = game_state['token_color']
-            self.player2_token_color = 'dark' if game_state['token_color'] == 'light' else 'light'
+        self.player1_token_color = self.game_state['token_color']
+        self.player2_token_color = 'dark' if self.game_state['token_color'] == 'light' else 'light'
         self.log_output = log_output
         self.create_game_log()
         self.auto_start_game_engine = auto_start_game_engine
