@@ -79,3 +79,5 @@ This is an **invalid** game state:
 light_token_positions -> [1, 3, 8, 0, 0, 0, 0]
 dark__token_positions -> [1, 3, 8, 0, 0, 0, 0]
 ```
+
+Feel free to play around!
