@@ -1,5 +1,5 @@
 from distutils.log import error
-from agent_interface import Agent
+from agents.agent_interface import Agent
 
 class Human(Agent):
     def __init__(self, name):

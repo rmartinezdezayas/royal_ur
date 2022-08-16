@@ -1,10 +1,24 @@
+from agents.agent_interface import Agent
 import datetime
 import random
 import csv
 
 class Game:
 
-    def __init__(self, player1, player2, log_path='', game_state=None, dice_roll_manual=False, print_board=False, log_output=True, auto_start_game_engine=True):
+    def __init__(self, player1: Agent, player2: Agent, log_path: str ='.', game_state: dict =None, dice_roll_manual: bool =False, print_board: bool =False, log_output: bool =True, auto_start_game_engine: bool =True):
+        '''
+        Creates a Game environment instance.
+
+        Parameters:
+        player1: A Game like object to be the player 1.
+        player2: A Game like object to be the player 2.
+        log_path: The string path where the log of the game will be stored as a csv file with "tab" delimiter.
+        game_state: A dict indicating a specific game_state from where to start the game environment.
+        dice_roll_manual: Boolean indicating if the dice roll shoul be introduced manually or not. (True -> environment will ask for roll dice result value, False -> environment generates a random dice roll result)
+        print_board: Boolean for printing a board by console.
+        log_output: Boolean indicating if the gameplay log should be stored or not.
+        auto_start_game_engine: Boolean for automatically start the game loop after instantiating the class. If False, each next steps in the play should be invoke manually.
+        '''
         self.player1 = player1
         self.player2 = player2
         self.game_state = game_state
@@ -23,6 +37,7 @@ class Game:
             self.start_game_engine()
 
     def create_new_game_state(self):
+        '''Creates a new game state to start from.'''
         self.game_state = {
             'game_id': datetime.datetime.now().strftime('%Y%m%d%H%M%S%f'),
             'turn_id': 1,
@@ -47,6 +62,7 @@ class Game:
         }
 
     def dice_roll(self):
+        '''Generate dice roll result. If dice_roll_manual is set to True, it will ask for the dice roll result value by console input.'''
         if self.dice_roll_manual == False:
             dice_roll_result = 0
             for dice in range(0, 4):
@@ -64,6 +80,7 @@ class Game:
             return dice_roll_result
 
     def create_game_log(self):
+        '''Creates the initial file where to store all the gamplay log.'''
         if self.log_output == True:
             with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'w', newline='') as game_file:
                 writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
@@ -71,6 +88,7 @@ class Game:
                 game_file.close()
 
     def log_turn(self):
+        '''Add the current ended turn to the log file.'''
         if self.log_output == True:
             with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'a', newline='') as game_file:
                 writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
@@ -78,6 +96,7 @@ class Game:
                 game_file.close()
 
     def get_both_players_positions(self):
+        '''Get both player position.'''
         self.current_player_token_color = self.player1_token_color if self.game_state['turn'] == self.player1.name else self.player2_token_color
         self.rival_player_token_color = self.player2_token_color if self.game_state['turn'] == self.player1.name else self.player1_token_color
         current_player_token_positions = [self.game_state[f'{self.current_player_token_color}_token_{token}_position'] for token in range(1,8)]
@@ -85,6 +104,7 @@ class Game:
         return current_player_token_positions, rival_player_token_positions
 
     def get_options(self):
+        '''Get available options to move the tokens given the current game state.'''
         current_player_token_positions, rival_player_token_positions = self.get_both_players_positions()
         options = []
         if self.game_state['dice_roll_result'] > 0:
@@ -100,6 +120,7 @@ class Game:
         return options
 
     def is_game_finished(self):
+        '''Verify if the game has finished.'''
         current_player_token_positions, rival_player_token_positions = self.get_both_players_positions()
         if set(current_player_token_positions) == {15} or set(rival_player_token_positions) == {15}:
             self.winner = self.player2.name if self.game_state['turn'] == self.player1.name else self.player1.name
@@ -107,7 +128,15 @@ class Game:
         else:
             return False
 
-    def next_turn(self, player_decision, player_options, desire_dice_roll_result=None):
+    def next_turn(self, player_decision: int, player_options: list, desire_dice_roll_result: int =None):
+        '''
+        Step into the nest turn. Add the decision to the current turn, log that turn into the log file and update all new turn values.
+
+        Parameters:
+        player_decision: The position of the token to move forward.
+        player_options: The list of options the player have. (Each option is a tuple indicating the initial position of the token to move and the final position where the token will land)
+        desire_dice_roll_result: Int value between 0 and 4 to force a specific dice roll.
+        '''
         # add decision to current game_state
         try:
             self.game_state['decision'] = list(filter(lambda x: x[0]==int(player_decision), player_options))[0]
@@ -144,6 +173,7 @@ class Game:
         self.game_state['decision'] = ''
 
     def start_game_engine(self):
+        '''Starts the game loop.'''
         while self.is_game_finished() == False:
             player_options = self.get_options()
             if self.print_board == True:
@@ -155,9 +185,9 @@ class Game:
                 player_decision = player_options[0][0]
 
             self.next_turn(player_decision, player_options)
-        print(f'Game finished! Winner: {self.winner}.')
 
     def print_game(self, player_options):
+        '''Print the game board by console along with usefull information about the turn and the decisions made.'''
         light_player_board_positions = [self.game_state[f'light_token_{token}_position'] for token in range(1,8)]
         dark_player_board_positions = [self.game_state[f'dark_token_{token}_position'] for token in range(1,8)]
         # from token positions

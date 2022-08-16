@@ -1,4 +1,4 @@
-from agent_interface import Agent
+from agents.agent_interface import Agent
 
 class LastMoveAgent(Agent):
     '''Always choose the most advanced token to move.'''

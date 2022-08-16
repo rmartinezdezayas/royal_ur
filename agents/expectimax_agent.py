@@ -2,7 +2,7 @@
 
 
 
-from agent_interface import Agent
+from agents.agent_interface import Agent
 from environment import Game
 
 class ExpectimaxAgent(Agent):

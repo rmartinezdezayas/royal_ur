@@ -1,4 +1,4 @@
-from agent_interface import Agent
+from agents.agent_interface import Agent
 
 class GreedyAgent(Agent):
     '''
