@@ -7,8 +7,10 @@ import os
 # logs_path = 'game_simulation_logs/random_vs_last_move_agent'
 # logs_path = 'game_simulation_logs/first_move_agent_vs_last_move_agent'
 # logs_path = 'game_simulation_logs/first_move_agent_vs_greedy_agent'
-logs_path = 'game_simulation_logs/last_move_agent_vs_greedy_agent'
+# logs_path = 'game_simulation_logs/last_move_agent_vs_greedy_agent'
 # logs_path = 'game_simulation_logs/random_vs_greedy_agent'
+# logs_path = 'game_simulation_logs/greedy_vs_expectimax'
+logs_path='game_simulation_logs/last_move_agent_vs_expectimax'
 
 log_dataframes = []
 

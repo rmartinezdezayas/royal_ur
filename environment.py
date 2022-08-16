@@ -1,24 +1,29 @@
-import pandas as pd
 import datetime
 import random
 import csv
 
 class Game:
 
-    def __init__(self, player1, player2, log_path, game_state=None, dice_roll_manual=False, print_board=False):
+    def __init__(self, player1, player2, log_path='', game_state=None, dice_roll_manual=False, print_board=False, log_output=True, auto_start_game_engine=True):
         self.player1 = player1
-        self.player1_token_color = 'light'
         self.player2 = player2
-        self.player2_token_color = 'dark'
         self.game_state = game_state
         self.print_board = print_board
         self.winner = None
         self.log_path = log_path
         self.dice_roll_manual = dice_roll_manual
         if game_state == None:
+            self.player1_token_color = 'light'
+            self.player2_token_color = 'dark'
             self.create_new_game_state()
+        else:
+            self.player1_token_color = game_state['token_color']
+            self.player2_token_color = 'dark' if game_state['token_color'] == 'light' else 'light'
+        self.log_output = log_output
         self.create_game_log()
-        self.start_game_engine()
+        self.auto_start_game_engine = auto_start_game_engine
+        if self.auto_start_game_engine == True:
+            self.start_game_engine()
 
     def create_new_game_state(self):
         self.game_state = {
@@ -62,16 +67,18 @@ class Game:
             return dice_roll_result
 
     def create_game_log(self):
-        with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'w', newline='') as game_file:
-            writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
-            writer.writeheader()
-            game_file.close()
+        if self.log_output == True:
+            with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'w', newline='') as game_file:
+                writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
+                writer.writeheader()
+                game_file.close()
 
-    def log_decision(self):
-        with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'a', newline='') as game_file:
-            writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
-            writer.writerow(self.game_state)
-            game_file.close()
+    def log_turn(self):
+        if self.log_output == True:
+            with open(f'{self.log_path}/{self.game_state["game_id"]}.csv', 'a', newline='') as game_file:
+                writer = csv.DictWriter(game_file, delimiter='\t', fieldnames = self.game_state.keys())
+                writer.writerow(self.game_state)
+                game_file.close()
 
     def get_both_players_positions(self):
         self.current_player_token_color = self.player1_token_color if self.game_state['turn'] == self.player1.name else self.player2_token_color
@@ -103,14 +110,19 @@ class Game:
         else:
             return False
 
-    def update_game_state_with_decision(self, player_decision, player_options):
+    def next_turn(self, player_decision, player_options, desire_dice_roll_result=None):
+        # add decision to current game_state
         try:
             self.game_state['decision'] = list(filter(lambda x: x[0]==int(player_decision), player_options))[0]
         except:
             self.game_state['decision'] = ''
-        self.log_decision()
 
-        if player_decision != None:
+        # log current turn (finished)
+        self.log_turn()
+
+        # set values for next turn
+        # update token positions based on decision taken
+        if self.game_state['decision']  != '':
             current_player_token_positions, rival_player_token_positions = self.get_both_players_positions()
             for i, player_position in enumerate(current_player_token_positions):
                 if player_position == self.game_state['decision'][0]:
@@ -120,12 +132,19 @@ class Game:
                             self.game_state[f'{self.rival_player_token_color}_token_{i+1}_position'] = 0
                             break
                     break
-
-        self.game_state['dice_roll_result'] = self.dice_roll()
+        # update dice_roll_result and turn_id
+        self.game_state['dice_roll_result'] = self.dice_roll() if desire_dice_roll_result == None else desire_dice_roll_result
         self.game_state['turn_id'] += 1
+
+        # do not update player turn if the decision was to get a token into a rossete tile
         if self.game_state['decision'] == '' or self.game_state['decision'][1] not in [4, 8, 14]:
             self.game_state['turn'] = self.player1.name if self.game_state['turn'] == self.player2.name else self.player2.name
+
+        # update token_color based on player turn change
         self.game_state['token_color'] = self.player1_token_color if self.game_state['turn'] == self.player1.name else self.player2_token_color
+
+        # restart decision value
+        self.game_state['decision'] = ''
 
     def start_game_engine(self):
         while self.is_game_finished() == False:
@@ -138,16 +157,18 @@ class Game:
             if len(player_options) == 1:
                 player_decision = player_options[0][0]
 
-            self.update_game_state_with_decision(player_decision, player_options)
+            self.next_turn(player_decision, player_options)
         print(f'Game finished! Winner: {self.winner}.')
 
     def print_game(self, player_options):
         light_player_board_positions = [self.game_state[f'light_token_{token}_position'] for token in range(1,8)]
         dark_player_board_positions = [self.game_state[f'dark_token_{token}_position'] for token in range(1,8)]
-        # from
-        # [0, 0, 2, 3, 0, 0, 0]
+        # from token positions
+        # light [0, 0, 2, 3, 0, 0, 0]
+        # dark  [1, 2, 15, 15, 15, 15, 15]
         # to
-        # ['L', '.', 'L', 'L', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+        # light ['L', '.', 'L', 'L', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.']
+        # dark  ['.', 'D', 'D', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', '.', 'D']
         light_final_positions = ['L' if i in light_player_board_positions else '.' for i, value in enumerate(range(0, 16))]
         dark_final_positions = ['D' if i in dark_player_board_positions else '.' for i, value in enumerate(range(0, 16))]
 
@@ -177,4 +198,4 @@ class Game:
         print('Options to choose from:')
         print(player_options)
         current_token_color_turn = self.player1_token_color if self.game_state['turn'] == self.player1.name else self.player2_token_color
-        print(f'Turn for player {self.game_state["turn"]}. ({current_token_color_turn}). Make your movement...')
+        print(f'Turn for player {self.game_state["turn"]}. ({current_token_color_turn}).')
