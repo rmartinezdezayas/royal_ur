@@ -1,2 +1,4 @@
 *.ps1
+*.py[cod]
+__pycache__/
 game_simulation_logs
