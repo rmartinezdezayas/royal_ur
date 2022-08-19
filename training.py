@@ -1,0 +1,6 @@
+from rl_agents.deep_q_learning import DeepQLearningAgent
+
+# train deep_q_learning model
+deep_q_learning_agent = DeepQLearningAgent(save_model_path='rl_models')
+deep_q_learning_agent.train_model()
+# deep_q_learning_agent.train_model(initial_rival_model_path='rl_models/DeepQLearningAgent_20220819094254325899_trained_for_1_games')

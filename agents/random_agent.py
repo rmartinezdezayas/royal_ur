@@ -7,4 +7,4 @@ class RandomAgent(Agent):
         self.name = name
 
     def decide(self, game_state, options):
-        return options[random.randint(0, len(options)-1)][0]
+        return options[random.randint(0, len(options)-1)][0] if len(options) > 0 else None
