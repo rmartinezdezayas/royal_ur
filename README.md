@@ -6,7 +6,7 @@ The main goal is to use this environment to train AI agents capable of playing t
 
 In addition, this environment is capable of generating the logs for each game, which can be used to generate analytics and obtain insights from the game and also from the strategies adopted by the trained models.
 
-## 👶Who to get started
+## 👶How to get started
 1. First of all you have to download or clone this repo information. You can do it by going **here**.
 2. Create your own python script.
 3. From your python script, import the module **environment.py** where the Python environment is stored.
